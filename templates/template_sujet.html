@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page service</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <h1 style="text-align:center;">La Galerie Immobilière - Administration</h1>
+    <h2 style="text-align:center;">Génération de pages services</h2>
+    <!-- Bouton déclencheur modal -->
+    <div style="text-align: center;">
+        <a class="btn btn-secondary" href="/">Page actualité</a>
+    </div>
+    <button type="button" class="btn btn-primary mb-3" data-toggle="modal" data-target="#ajoutSujetModal">
+        Ajouter
+    </button>
+    <!-- Modal -->
+    <div class="modal fade" id="ajoutSujetModal" tabindex="-1" role="dialog" aria-labelledby="ajoutSujetModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="ajoutSujetModalLabel">Ajouter un sujet</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+            <!-- Formulaire pour ajouter un sujet -->
+            <form id="ajoutSujetForm">
+                <div class="form-group">
+                <label for="nomSujet">Nom du sujet</label>
+                <input type="text" class="form-control" id="nomSujet" required>
+                </div>
+                <!-- Ajoutez d'autres champs si nécessaire -->
+                <button type="submit" class="btn btn-primary">Ajouter</button>
+            </form>
+            </div>
+        </div>
+        </div>
+    </div>
+  
+    <table class="table table-bordered table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>Sujet</th>
+                <th>Administration</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sujet in sujets %}
+            <tr>
+                <td>{{ sujet.sujet }}</td>  <!-- Remplacez 'nom_du_champ_sujet' par le champ approprié de votre collection -->
+                <td style="text-align:center;">
+                    <button class="btn btn-secondary edit-btn" data-id="{{ sujet._id }}">Modifier</button> <!-- Nouveau bouton pour modifier -->
+                    <button class="btn btn-warning update-btn ml-2" data-id="{{ sujet._id }}">Mettre à jour</button>
+                    <button class="btn btn-danger delete-btn ml-2" data-id="{{ sujet._id }}">Supprimer</button>
+                </td>
+
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Modal pour la modification -->
+    <div class="modal fade" id="modifierSujetModal" tabindex="-1" role="dialog" aria-labelledby="modifierSujetModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="modifierSujetModalLabel">Modifier un sujet</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+            <!-- Formulaire pour modifier un sujet -->
+            <form id="modifierSujetForm">
+                <input type="hidden" id="sujetIdToEdit"> <!-- Champ caché pour stocker l'ID du sujet à modifier -->
+                <div class="form-group">
+                <label for="nomSujetModifier">Nom du sujet</label>
+                <input type="text" class="form-control" id="nomSujetModifier" required>
+                </div>
+                <!-- Ajoutez d'autres champs si nécessaire -->
+                <button type="submit" class="btn btn-primary">Modifier</button>
+            </form>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    
+    <script>
+        $(document).ready(function() {
+          $("#ajoutSujetForm").submit(function(e) {
+            e.preventDefault(); // Empêche le rechargement de la page
+      
+            let nomSujet = $("#nomSujet").val();
+      
+            $.ajax({
+                type: "POST",
+                url: "/api/sujet_service",
+                contentType: "application/json",  // <-- Cela indique que nous envoyons du JSON
+                data: JSON.stringify({ sujet: nomSujet }),  // <-- Convertir l'objet en chaîne JSON
+                success: function(data) {
+                    alert("Sujet ajouté avec succès!");
+                    location.reload();
+                },
+                error: function(error) {
+                    alert("Erreur lors de l'ajout du sujet.");
+                }
+            });
+
+          });
+        });
+
+        $(document).on('click', '.edit-btn', function() {
+            var sujetId = $(this).data('id');  // Récupérez l'ID du sujet
+            var sujetName = $(this).closest('tr').find('td:first').text();  // Récupérez le nom du sujet
+
+            $('#sujetIdToEdit').val(sujetId);  // Stockez l'ID du sujet dans le champ caché
+            $('#nomSujetModifier').val(sujetName);  // Pré-remplir le champ avec le nom actuel du sujet
+            $('#modifierSujetModal').modal('show');  // Ouvrir la modal
+        });
+
+        $("#modifierSujetForm").submit(function(e) {
+            e.preventDefault();
+
+            let sujetId = $("#sujetIdToEdit").val(); // Récupérez l'ID du sujet à partir du champ caché
+            let nouveauNom = $("#nomSujetModifier").val();
+
+            $.ajax({
+                type: "PUT",
+                url: "/api/sujet_service/" + sujetId,
+                contentType: "application/json",  
+                data: JSON.stringify({ sujet: nouveauNom }),
+                success: function(data) {
+                    alert("Sujet mis à jour avec succès!");
+                    $('#modifierSujetModal').modal('hide');  // Fermer la modal
+                    location.reload();  // Rechargez la page pour voir les modifications
+                },
+                error: function(error) {
+                    alert("Erreur lors de la mise à jour du sujet.");
+                }
+            });
+        });
+
+
+
+        $(document).on('click', '.delete-btn', function() {
+            var sujetId = $(this).data('id');  // Récupérez l'ID du sujet
+            if (confirm("Êtes-vous sûr de vouloir supprimer ce sujet?")) {
+                console.log(sujetId)
+                $.ajax({
+                    type: "DELETE",
+                    url: "/api/sujet_service/" + sujetId,
+                    success: function(response) {
+                        alert("Sujet supprimé avec succès!");
+                        location.reload();  // Rechargez la page pour voir les modifications
+                    },
+                    error: function(error) {
+                        alert("Erreur lors de la suppression du sujet.");
+                    }
+                });
+            }
+        });
+
+        $(document).on('click', '.update-btn', function() {
+            var sujetId = $(this).data('id');  // Récupérez l'ID du sujet
+            
+            $.ajax({
+                type: "GET",
+                url: "/api/sujet_service/" + sujetId,
+                success: function(sujet) {
+                    alert("Sujet mis à jour avec succès !");
+                    location.reload();
+                },
+                error: function(error) {
+                    alert("Erreur lors de la récupération des détails du sujet.");
+                }
+            });
+        });
+
+
+      </script>
+      
+
+</body>
+</html>

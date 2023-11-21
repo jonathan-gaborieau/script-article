@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mon Application FastAPI</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+</head>
+<body>
+
+<h1 style="text-align:center;">La Galerie Immobilière - Administration</h1>
+<h2 style="text-align:center;">Génération d'articles sur l'actualité</h2>
+<div style="text-align: center;">
+    <a class="btn btn-secondary" href="/ajout-sujet">Page service</a>
+</div>
+<button type="button" class="btn btn-primary" style="margin-bottom: 10px;" data-toggle="modal" data-target="#myModal">Ajouter</button>
+<table id="sujetTable" class="table table-bordered table-striped">
+    <thead class="thead-dark">
+        <tr>
+            <th>Sujet</th>
+            <th>Type</th>
+            <th>Catégorie</th>
+            <th>Administration</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Les lignes du tableau seront générées dynamiquement ici -->
+    </tbody>
+</table>
+
+<table id="villeTable" class="table table-bordered table-striped" style="width: 50%; margin-left:auto; margin-right:auto;">
+    <thead class="thead-dark">
+        <tr>
+            <th>Ville</th>
+            <th>Administration</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Les lignes du tableau seront générées dynamiquement ici -->
+    </tbody>
+</table>
+<div class="modal fade" id="updateModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Mettre à jour le sujet</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <input type="hidden" id="updateSujetId">
+                <input type="text" class="form-control" placeholder="Ecrivez le sujet ici" id="updateInputSujet">
+                <br>
+                <label for="updateType">Type:</label>
+                <select name="updateType" class="form-control" id="updateType">
+                    <option value="estimation">Estimation</option>
+                    <option value="achat">Achat</option>
+                    <option value="vente">Vente</option>
+                    <option value="contact">Contact</option>
+                    <option value="nos biens">Nos biens</option>
+                </select>
+                <br>
+                <label for="updateCategorie">Catégorie:</label>
+                <select name="updateCategorie" class="form-control" id="updateCategorie">
+                    <option value="colonne1">Colonne 1</option>
+                    <option value="colonne2">Colonne 2</option>
+                    <option value="colonne3">Colonne 3</option>
+                </select>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="updateButton">Mettre à jour</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modale pour modifier les villes -->
+<div class="modal fade" id="modifyVilleModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Modifier la ville</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <input type="text" class="form-control" placeholder="Ville" id="modifyInputVille">
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="modifyVilleButton">Valider</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- La Modal -->
+<div class="modal fade" id="myModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Choisir une option</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                Choisissez une option:
+                <select class="form-control" id="selectOption">
+                    <option value="sujet" selected>Sujet</option>
+                    <option value="ville">Ville</option>
+                </select>
+
+                <div id="sujetFields" >
+                    <br>
+                    <input type="text" class="form-control" placeholder="Ecrivez le sujet ici" id="inputSujet">
+                    <br>
+                    <label for="type">Type:</label>
+                    <select name="type" class="form-control" id="type">
+                        <option value="estimation">Estimation</option>
+                        <option value="achat">Achat</option>
+                        <option value="vente">Vente</option>
+                        <option value="contact">Contact</option>
+                        <option value="nos biens">Nos biens</option>
+                    </select>
+                    <br>
+                    <label for="categorie">Catégorie:</label>
+                    <select name="categorie" class="form-control" id="categorie">
+                        <option value="colonne1">Colonne 1</option>
+                        <option value="colonne2">Colonne 2</option>
+                        <option value="colonne3">Colonne 3</option>
+                    </select>
+
+                </div>
+
+                <div id="villeFields" style="display:none;">
+                    <br>
+                    <input type="text" class="form-control" placeholder="Ville" id="inputVille">
+                </div>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="submitButton">Valider</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Fermer</button>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Écoute les changements sur le sélecteur
+    $("#selectOption").change(function() {
+        var selectedValue = $(this).val();
+
+        if (selectedValue === "sujet") {
+            $("#sujetFields").show();
+            $("#villeFields").hide();
+        } else if (selectedValue === "ville") {
+            $("#sujetFields").hide();
+            $("#villeFields").show();
+        }
+    });
+
+    $('#myModal').on('show.bs.modal', function (e) {
+        // Assurez-vous que le sélecteur est défini sur 'sujet'
+        $("#selectOption").val("sujet");
+        // Affichez les champs pour 'sujet' et cachez ceux pour 'ville'
+        $("#sujetFields").show();
+        $("#villeFields").hide();
+        // Effacez tous les champs de saisie
+        $("#inputSujet").val('');
+        $("#type").val('estimation'); // ou une autre valeur par défaut si nécessaire
+        $("#categorie").val('colonne1'); // ou une autre valeur par défaut si nécessaire
+        $("#inputVille").val('');
+    });
+
+    // Effacez les champs lorsque la modal est complètement fermée
+    $('#myModal').on('hidden.bs.modal', function (e) {
+        // Effacez tous les champs de saisie
+        $("#inputSujet").val('');
+        $("#inputVille").val('');
+    });
+});
+$("#submitButton").click(function() {
+    var selectedOption = $("#selectOption").val();
+    var dataToSend = {};
+    if (selectedOption === "sujet") {
+        dataToSend = {
+            option: "sujet",
+            sujet: $("#inputSujet").val(),
+            type: $("#type").val(),
+            categorie: $("#categorie").val(), // Récupérez la valeur du sélecteur Catégorie
+        };
+    } else if (selectedOption === "ville") {
+        dataToSend = {
+            option: "ville",
+            ville: $("#inputVille").val()
+        };
+    }
+
+    $.ajax({
+        type: "POST",
+        url: "/api/process_data",
+        data: JSON.stringify(dataToSend),
+        contentType: "application/json",
+        success: function(response) {
+            alert("Données envoyées avec succès !");
+            $('#myModal').modal('hide');
+            location.reload();
+        },
+        error: function(error) {
+            alert("Erreur lors de l'envoi des données.");
+        }
+    });
+});
+
+// Après le chargement de la page, récupérez les données et remplissez le tableau
+window.onload = function() {
+    fetch("/sujets/")
+        .then(response => response.json())
+        .then(data => {
+            const tbody = document.getElementById("sujetTable").querySelector("tbody");
+            data.forEach(sujet => {
+                const row = tbody.insertRow();
+                
+                const cellSujet = row.insertCell();
+                // Créez un conteneur div pour le sujet et l'icône
+                const divContainer = document.createElement('div');
+                divContainer.style.display = 'flex';
+                divContainer.style.alignItems = 'center';
+                
+                // Créez un span pour le sujet
+                const spanSujet = document.createElement('span');
+                spanSujet.textContent = sujet.sujet;
+                divContainer.appendChild(spanSujet);
+                
+                cellSujet.appendChild(divContainer);
+
+                const cellType = row.insertCell();
+                cellType.textContent = sujet.type;
+
+                const cellCategorie = row.insertCell();
+                cellCategorie.textContent = sujet.categorie;
+                
+                const cellModify = row.insertCell();
+                cellModify.style.textAlign = "center";
+                const modifyButton = document.createElement("button");
+                modifyButton.setAttribute("data-id", sujet._id);
+                modifyButton.textContent = "Modifier";
+                modifyButton.classList.add("btn", "btn-secondary"); // Classes Bootstrap pour le style
+                modifyButton.addEventListener("click", function() {
+                    const id = this.getAttribute("data-id");
+                    openUpdateModal(id, sujet);
+                });
+                cellModify.appendChild(modifyButton);
+
+                const updateButton = document.createElement("button");
+                updateButton.textContent = "Mettre à jour";
+                updateButton.classList.add("btn", "btn-warning", "ml-2");
+                updateButton.setAttribute("data-id", sujet._id);
+
+                // Ajouter un écouteur d'événements pour le bouton Mettre à jour (à développer)
+                updateButton.addEventListener("click", function() {
+                    const id = this.getAttribute("data-id");
+                    updateContent(id);
+                });
+                cellModify.appendChild(updateButton);
+
+                const deleteButton = document.createElement("button");
+                deleteButton.textContent = "Supprimer";
+                deleteButton.setAttribute("data-id", sujet._id);
+                deleteButton.classList.add("btn", "btn-danger", "ml-2");
+                // Ajouter un écouteur d'événements pour le bouton Supprimer (à développer)
+                deleteButton.addEventListener("click", function() {
+                    let id = this.getAttribute("data-id");
+                    deleteFromDatabase('sujet',id);
+                });
+
+                cellModify.appendChild(deleteButton);
+            });
+        });
+}
+
+// Récupérez les données de la collection "ville" et remplissez le tableau "ville"
+fetch("/villes/")
+    .then(response => response.json())
+    .then(data => {
+        const tbody = document.getElementById("villeTable").querySelector("tbody");
+        data.forEach(ville => {
+            const row = tbody.insertRow();
+
+            const cellVille = row.insertCell();
+            cellVille.textContent = ville.ville;
+            
+            const cellModify = row.insertCell();
+            cellModify.style.textAlign = "center";
+            const modifyButton = document.createElement("button");
+            modifyButton.textContent = "Modifier";
+            modifyButton.classList.add("btn", "btn-secondary"); // Classes Bootstrap pour le style
+            modifyButton.addEventListener("click", function() {
+                // Affiche la modale
+                $('#modifyVilleModal').modal('show');
+                
+                // Remplit le champ avec la valeur actuelle de la ville
+                document.getElementById("modifyInputVille").value = ville.ville;
+
+                // Ajouter un événement au bouton "Valider" de la modale pour effectuer la modification
+                document.getElementById("modifyVilleButton").addEventListener("click", function() {
+                    const newVilleName = document.getElementById("modifyInputVille").value;
+                    
+                    if (newVilleName) {
+                        // Envoie la mise à jour au back-end
+                        fetch(`/villes/${ville._id}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ ville: newVilleName }),
+                            success: function(response){
+                                alert("Ville mise à jour avec succès !");
+                                location.reload();
+                            }
+
+                            
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                alert(data.message);
+                                location.reload();
+                            } else {
+                                alert('Erreur lors de la mise à jour');
+                            }
+                        });
+                    }
+                });
+            });
+            cellModify.appendChild(modifyButton);
+
+            const deleteButton = document.createElement("button");
+            deleteButton.textContent = "Supprimer";
+            deleteButton.classList.add("btn", "btn-danger","ml-2");
+            deleteButton.setAttribute("data-id", ville._id);
+            deleteButton.addEventListener("click", function() {
+                const id = this.getAttribute("data-id");
+                deleteFromDatabase('ville',id);
+            });
+
+            cellModify.appendChild(deleteButton);
+        });
+    });
+
+
+function deleteFromDatabase(collectionType, id) {
+    $.ajax({
+        type: "DELETE",
+        url: `/api/delete/${collectionType}/${id}`,  // Utilisez collectionType ici
+        success: function(response) {
+            alert("Donnée supprimée avec succès !");
+            location.reload();
+        },
+        error: function(error) {
+            alert("Erreur lors de la suppression.");
+        }
+    });
+}
+function editSujet(id, currentSujet) {
+    const newSujet = prompt("Modifier le sujet:", currentSujet);
+    if (newSujet && newSujet !== currentSujet) {
+        // Envoyez la nouvelle valeur à votre backend pour mettre à jour dans la base de données.
+        // Par exemple:
+        $.ajax({
+            type: "POST",
+            url: `/api/edit/sujet/${id}`,
+            data: JSON.stringify({ sujet: newSujet }),
+            contentType: "application/json",
+            success: function(response) {
+                alert("Sujet mis à jour avec succès !");
+                location.reload();
+            },
+            error: function(error) {
+                alert("Erreur lors de la mise à jour.");
+            }
+        });
+    }
+}
+
+function openUpdateModal(id, sujet) {
+    // Préremplissez la modal avec les valeurs actuelles
+    document.getElementById("updateSujetId").value = id;
+    document.getElementById("updateInputSujet").value = sujet.sujet;
+    document.getElementById("updateType").value = sujet.type;
+    document.getElementById("updateCategorie").value = sujet.categorie;
+
+    // Ouvrez la modal
+    $('#updateModal').modal('show');
+}
+
+document.getElementById("updateButton").addEventListener("click", function() {
+    const id = document.getElementById("updateSujetId").value;
+    const updatedData = {
+        sujet: document.getElementById("updateInputSujet").value,
+        type: document.getElementById("updateType").value,
+        categorie: document.getElementById("updateCategorie").value
+    };
+
+    $.ajax({
+        type: "PUT",
+        url: `/update_sujet/${id}`,
+        data: JSON.stringify(updatedData),
+        contentType: "application/json",
+        success: function(response) {
+            alert("Sujet mis à jour avec succès !");
+            $('#updateModal').modal('hide');
+            location.reload();
+        },
+        error: function(error) {
+            alert("Erreur lors de la mise à jour.");
+            console.log(error);
+        }
+    });
+});
+
+function updateContent(id) {
+    $.ajax({
+        type: "PUT",
+        url: `/update_content/${id}`,
+        contentType: "application/json",
+        success: function(response) {
+            alert("Sujet mis à jour avec succès !");
+            location.reload();
+        },
+        error: function(error) {
+            alert("Erreur lors de la mise à jour.");
+            console.log(error);
+        }
+    });
+}
+
+
+</script>
+
+</body>
+</html>
